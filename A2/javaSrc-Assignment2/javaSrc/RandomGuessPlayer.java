@@ -119,14 +119,14 @@ public class RandomGuessPlayer implements Player
 		int index = generateRand.nextInt(attribK.length);
 		Object attribute = (String) attribK[index];
 
-		System.out.println(attribute+" "+Feature.get(attribute));
+		/*System.out.println(attribute+" "+Feature.get(attribute));*/
 		String temp = (String) Feature.get(attribute);
 		String characteristic[] = temp.split(" ");
 		int randomInt = generateRand.nextInt(characteristic.length);
 		while (randomInt >characteristic.length) {
 			randomInt = generateRand.nextInt(characteristic.length);
 		}
-		System.out.println(characteristic[randomInt]);
+		/*System.out.println(characteristic[randomInt]);*/
 		Gval = characteristic[randomInt];
 		Gattribute = (String) attribute;
 		return new Guess(Guess.GuessType.Attribute,(String) attribute,characteristic[randomInt]);
@@ -137,7 +137,7 @@ public class RandomGuessPlayer implements Player
 		
 		int index = generateRand.nextInt(pplK.length);
 		Object selector = (String) pplK[index];
-		System.out.println(selector);
+		/*System.out.println(selector);*/
 		Gval = (String) selector;
         return new Guess(Guess.GuessType.Person,"", (String) selector);
 		
@@ -149,7 +149,7 @@ public class RandomGuessPlayer implements Player
 	private String chosenName;
 
     public boolean answer(Guess currGuess) {
-		System.out.println("printing: "+currGuess.toString());
+		/*System.out.println("printing: "+currGuess.toString());*/
 		//check if my person has these attributes
 		if (chosenName.equals(currGuess.getValue())) {
 			return true;
@@ -221,12 +221,13 @@ public class RandomGuessPlayer implements Player
 		if (currGuess.getAttribute().equals("") && answer == false) {
 			/*delete the character that doesn't fit in*/
 			Person.remove(currGuess.getValue(),Person.get(currGuess.getValue()));
-			for (String s : ChosenPlayer.keySet()) {
+			/*for (String s : ChosenPlayer.keySet()) {
 				System.out.println(s+": "+ChosenPlayer.get(s));
-			}
+			}*/
 			return false;
 		}
 		return true;
     } // end of receiveAnswer()
 
 } // end of class RandomGuessPlayer
+
