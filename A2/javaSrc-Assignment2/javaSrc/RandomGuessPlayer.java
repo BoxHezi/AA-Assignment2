@@ -33,8 +33,7 @@ public class RandomGuessPlayer implements Player
 	/*this will contian the chosen player's features*/
     private Map<String, String> ChosenPlayer = new HashMap<String, String>();
 	/*This hash map will contian all players in the config*/
-	private Map<String, Map<String,String>> Person = new HashMap<String, Map<String,String>>();
-	private Map<String, String> element = new HashMap<String, String>();
+	private Map<String, String> Person = new HashMap<String, String>();
 	/*This will contian the values of the oopenent that we are rying to guess*/
 	private Map<String, String> Opponent = new HashMap<String, String>();
 	
@@ -82,15 +81,16 @@ public class RandomGuessPlayer implements Player
 						line = ppl.nextLine();
 						while(line.length()>1) {	
 							String words[] = line.split(" ");
-							/*System.out.println("It works: "+words[0]+" "+words[1]);*/
-							element.put(words[0],words[1]);
+							//System.out.println("It works: "+person+" "+words[0]+" "+words[1]);
+							/*you're putting it in with the same kay that's why it wont work dumbass!!*/
+							String key = person+","+words[0]; 
+							Person.put(key,words[1]);
 							if (ppl.hasNextLine()) {
 								line = ppl.nextLine();
 							} else {
 								break;
 							}
 						}
-						Person.put(person,element);
 					}
 				}
 			}
@@ -115,31 +115,36 @@ public class RandomGuessPlayer implements Player
 		that are needed to be stored, no you just delete them after you have found it
 		and store it somewhere*/
 		if (Opponent.size()!=Feature.size()) {
-		Object[] attribK = Feature.keySet().toArray();
-		int index = generateRand.nextInt(attribK.length);
-		Object attribute = (String) attribK[index];
-
-		/*System.out.println(attribute+" "+Feature.get(attribute));*/
-		String temp = (String) Feature.get(attribute);
-		String characteristic[] = temp.split(" ");
-		int randomInt = generateRand.nextInt(characteristic.length);
-		while (randomInt >characteristic.length) {
-			randomInt = generateRand.nextInt(characteristic.length);
-		}
-		/*System.out.println(characteristic[randomInt]);*/
-		Gval = characteristic[randomInt];
-		Gattribute = (String) attribute;
+			Object[] attribK = Feature.keySet().toArray();
+			int index = generateRand.nextInt(attribK.length);
+			Object attribute = (String) attribK[index];
+			while (Opponent.get(attribute) != null) {
+				index = generateRand.nextInt(attribK.length);
+				attribute = (String) attribK[index];
+			}
+			/*System.out.println(attribute+" "+Feature.get(attribute));*/
+			String temp = (String) Feature.get(attribute);
+			String characteristic[] = temp.split(" ");
+			int randomInt = generateRand.nextInt(characteristic.length);
+			while (randomInt >characteristic.length) {
+				randomInt = generateRand.nextInt(characteristic.length);
+			}
+			/*System.out.println(characteristic[randomInt]);*/
+			Gval = characteristic[randomInt];
+			Gattribute = (String) attribute;
 		return new Guess(Guess.GuessType.Attribute,(String) attribute,characteristic[randomInt]);
 		}
 		/*Guessing person*/
 		
 		Object[] pplK = Person.keySet().toArray();
-		
 		int index = generateRand.nextInt(pplK.length);
 		Object selector = (String) pplK[index];
 		/*System.out.println(selector);*/
-		Gval = (String) selector;
-        return new Guess(Guess.GuessType.Person,"", (String) selector);
+		String container = (String) selector;
+		String[] word = container.split(",");
+		//System.out.println("index: "+index+" person: "+Person.size());
+		Gval = word[0];
+		return new Guess(Guess.GuessType.Person,"", word[0]);
 		
 		
     } // end of guess()
@@ -182,16 +187,29 @@ public class RandomGuessPlayer implements Player
 			/*the guess was correct and is added to the opponent hashMap*/
 			if (answer == true) {
 				Opponent.put(currGuess.getAttribute(),currGuess.getValue());
-				for (String ele : element.keySet()) {
+				String[] contain = new String[Person.size()];
+				int p=0;
 					for (String character : Person.keySet()) {
-						if (ele.equals(currGuess.getAttribute())) {
-							if (!Person.get(character).get(ele).equals(currGuess.getValue())) {
-								//find a way to remove invalid players
+						String word[] = character.split(",");
+						if (word[1].equals(currGuess.getAttribute())) {
+							if (!Person.get(character).equals(currGuess.getValue())) {
+								//System.out.println(Person.get(character)+" "+currGuess.getValue());
+								contain[p] = character;
+								p++;
 							}
 						}
-						//System.out.println(character+" "+ele+" : "+Person.get(character).get(ele));
 					}
-				}
+					Object[] feature = Feature.keySet().toArray();
+					for (int i =0; i <p; i++) {
+					/*you need a way to delete all the Ps*/
+					/*do this pls*/
+						for (int k =0; k<Feature.size();k++) {
+							String[] str = contain[i].split(",");
+							//System.out.println("removing contains:"+str[0]+","+feature[k]);
+							Person.remove(str[0]+","+feature[k]);
+						}
+					}
+					
 				return false;
 			}
 			String words = (String) Feature.get(currGuess.getAttribute());
@@ -208,6 +226,10 @@ public class RandomGuessPlayer implements Player
 						}
 					}
 					Feature.put(currGuess.getAttribute(),newString);
+					String[] word = newString.split(" ");
+					if (word.length == 1) {
+						Opponent.put(currGuess.getAttribute(),newString);
+					}
 					/*System.out.println("modified: "+newString+" shouldn't have "+currGuess.getValue());
 					for (String p : Feature.keySet()) {
 					System.out.println("debugger: "+p+": "+Feature.get(p));
