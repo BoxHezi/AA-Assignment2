@@ -201,15 +201,12 @@ public class RandomGuessPlayer implements Player
 					}
 					Object[] feature = Feature.keySet().toArray();
 					for (int i =0; i <p; i++) {
-					/*you need a way to delete all the Ps*/
-					/*do this pls*/
 						for (int k =0; k<Feature.size();k++) {
 							String[] str = contain[i].split(",");
 							//System.out.println("removing contains:"+str[0]+","+feature[k]);
 							Person.remove(str[0]+","+feature[k]);
 						}
 					}
-					
 				return false;
 			}
 			String words = (String) Feature.get(currGuess.getAttribute());
@@ -230,6 +227,33 @@ public class RandomGuessPlayer implements Player
 					if (word.length == 1) {
 						Opponent.put(currGuess.getAttribute(),newString);
 					}
+                    
+                    
+                    
+                    
+                    
+                    //gets rid of people with the current attribute type
+                    String[] contain = new String[Person.size()];
+				    int p=0;
+					for (String character : Person.keySet()) {
+						String w[] = character.split(",");
+						if (w[1].equals(currGuess.getAttribute())) {
+							if (Person.get(character).equals(currGuess.getValue())) {
+								//System.out.println(Person.get(character)+" "+currGuess.getValue());
+								contain[p] = character;
+								p++;
+							}
+						}
+					}
+					Object[] feature = Feature.keySet().toArray();
+					for (int c =0; c <p; c++) {
+						for (int k =0; k<Feature.size();k++) {
+							String[] str = contain[c].split(",");
+							//System.out.println("removing contains:"+str[0]+","+feature[k]);
+							Person.remove(str[0]+","+feature[k]);
+						}
+					}
+                    
 					/*System.out.println("modified: "+newString+" shouldn't have "+currGuess.getValue());
 					for (String p : Feature.keySet()) {
 					System.out.println("debugger: "+p+": "+Feature.get(p));
