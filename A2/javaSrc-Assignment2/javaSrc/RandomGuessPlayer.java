@@ -46,8 +46,6 @@ public class RandomGuessPlayer implements Player
 			File file = new File(gameFilename);
 			Scanner reader = new Scanner(System.in);
 			reader = new Scanner(file);
-			Scanner attReader = new Scanner(System.in);
-			attReader = new Scanner(file);
 			Scanner ppl = new Scanner(System.in);
 			ppl = new Scanner(file);
 			this.chosenName = chosenName;
@@ -63,15 +61,7 @@ public class RandomGuessPlayer implements Player
 					}
 				}
 			}
-			while (attReader.hasNextLine()) {
-				String line = attReader.nextLine();
-				if (line.length()==0) {
-					break;
-				}
-				String words[] = line.split(" ",2);
-				/*System.out.println("It works: "+words[0]+" "+words[1]);*/
-				Feature.put(words[0], words[1]);
-			}
+			//this gets the players and the attributes for guessing
 			while (ppl.hasNextLine()) {
 				String line = ppl.nextLine();
 				int i=0;
@@ -82,9 +72,12 @@ public class RandomGuessPlayer implements Player
 						while(line.length()>1) {	
 							String words[] = line.split(" ");
 							//System.out.println("It works: "+person+" "+words[0]+" "+words[1]);
-							/*you're putting it in with the same kay that's why it wont work dumbass!!*/
+							//just make it store itself here
 							String key = person+","+words[0]; 
 							Person.put(key,words[1]);
+							//It's storing attribute, then type
+							//System.out.println(words[0]+" "+words[1]);
+							Feature.put(words[0], words[1]);
 							if (ppl.hasNextLine()) {
 								line = ppl.nextLine();
 							} else {
@@ -209,6 +202,9 @@ public class RandomGuessPlayer implements Player
 					}
 				return false;
 			}
+            
+            
+            /*guesss was wrong*/
 			String words = (String) Feature.get(currGuess.getAttribute());
 			String[] list = words.split(" ");
 			if (list.length==1) {
@@ -227,10 +223,6 @@ public class RandomGuessPlayer implements Player
 					if (word.length == 1) {
 						Opponent.put(currGuess.getAttribute(),newString);
 					}
-                    
-                    
-                    
-                    
                     
                     //gets rid of people with the current attribute type
                     String[] contain = new String[Person.size()];
