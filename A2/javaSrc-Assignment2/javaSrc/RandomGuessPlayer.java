@@ -76,8 +76,22 @@ public class RandomGuessPlayer implements Player
 							String key = person+","+words[0]; 
 							Person.put(key,words[1]);
 							//It's storing attribute, then type
+							boolean append = false;
+							for (String p : Feature.keySet()) {
+								 if (words[0].equals(p) && !Feature.get(p).contains(words[1])) {
+								 	append = true;
+								 	break;	
+								 }
+							}
+							
+							//you might need to get rid of overlapping attributes
+							if (append == true) {
+								Feature.put(words[0],Feature.get(words[0])+" "+words[1]);
+							} else {
+								Feature.put(words[0],words[1]);
+							}
 							//System.out.println(words[0]+" "+words[1]);
-							Feature.put(words[0], words[1]);
+							
 							if (ppl.hasNextLine()) {
 								line = ppl.nextLine();
 							} else {
@@ -86,6 +100,10 @@ public class RandomGuessPlayer implements Player
 						}
 					}
 				}
+			}
+			
+			for (String p : Feature.keySet()) {
+				System.out.println(p+" "+Feature.get(p));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -130,6 +148,9 @@ public class RandomGuessPlayer implements Player
 		/*Guessing person*/
 		
 		Object[] pplK = Person.keySet().toArray();
+		if (pplK.length ==0) {
+			System.out.println("Player does not exist");
+		}
 		int index = generateRand.nextInt(pplK.length);
 		Object selector = (String) pplK[index];
 		/*System.out.println(selector);*/
