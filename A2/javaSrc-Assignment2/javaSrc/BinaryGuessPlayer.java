@@ -12,10 +12,11 @@ import java.util.Scanner;
  * that this class implements the Player interface (directly or indirectly).
  */
 public class BinaryGuessPlayer implements Player {
+    private static final String BINARY_LOG_FILE = "binarylog.txt";
 
     Map<String, String> featureMap = new HashMap<>();
 
-    Map<String, String> chosen = new HashMap<>();
+    Map<String, String> personInfo = new HashMap<>();
 
     /**
      * Loads the game configuration from gameFilename, and also store the chosen
@@ -30,17 +31,6 @@ public class BinaryGuessPlayer implements Player {
      */
     public BinaryGuessPlayer(String gameFilename, String chosenName) throws IOException {
         Scanner gameFileReader = new Scanner(new File(gameFilename));
-//        Scanner chosenFileReader = new Scanner(new File(chosenName));
-
-        /*while (chosenFileReader.hasNextLine()) {
-            String chosenLine = chosenFileReader.nextLine();
-            String[] chosenStr = chosenLine.split("\\s");
-
-            for (String s : chosenStr) {
-                chosen.put(s, null);
-            }
-            chosenFileReader.close();
-        }*/
 
         while (gameFileReader.hasNextLine()) {
             String configLine = gameFileReader.nextLine();
@@ -51,6 +41,7 @@ public class BinaryGuessPlayer implements Player {
             }
             featureMap.put(attributeFeature[0], String.valueOf(attributeValue));
         }
+
 
     } // end of BinaryGuessPlayer()
 
