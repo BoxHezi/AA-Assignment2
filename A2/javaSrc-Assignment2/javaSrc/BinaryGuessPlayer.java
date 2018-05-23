@@ -39,6 +39,20 @@ public class BinaryGuessPlayer implements Player {
                 if (featureList.size() <= 0) {
                     getFeatureType(String.valueOf(featureValue));
                 }
+                HashMap<String, String> individualFeatureInnerMap = new HashMap<>();
+                do {
+                    String candidateFeature;
+                    if (gameFileReader.hasNextLine()) {
+                        candidateFeature = gameFileReader.nextLine();
+                    } else {
+                        break;
+                    }
+                    System.out.println(candidateFeature);
+                    if (candidateFeature.matches("[P2]")) {
+                        System.out.println("--------");
+                        break;
+                    }
+                } while (true);
                 individualFeature.put(configLine, new HashMap<>());
             } else {
                 String[] attributeFeature = configLine.split("\\s");
