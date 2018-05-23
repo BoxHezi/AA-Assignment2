@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Binary-search based guessing player.
@@ -12,11 +10,13 @@ import java.util.Scanner;
  * that this class implements the Player interface (directly or indirectly).
  */
 public class BinaryGuessPlayer implements Player {
-    private static final String BINARY_LOG_FILE = "binarylog.txt";
-
-    Map<String, String> featureMap = new HashMap<>();
-
-    Map<String, String> personInfo = new HashMap<>();
+    //list to store all feature that one candidate might have
+    List<String> featureList = new ArrayList<>();
+    Map<String, String> candidateMap = new HashMap<>();
+    //count how time per feature appears
+    Map<String, Map<String, Integer>> featureCount = new HashMap<>();
+    //store each person's feature value
+    Map<String, Map<String, String>> individualFeature = new HashMap<>();
 
     /**
      * Loads the game configuration from gameFilename, and also store the chosen
@@ -32,19 +32,22 @@ public class BinaryGuessPlayer implements Player {
     public BinaryGuessPlayer(String gameFilename, String chosenName) throws IOException {
         Scanner gameFileReader = new Scanner(new File(gameFilename));
 
+        StringBuilder featureValue = new StringBuilder();
         while (gameFileReader.hasNextLine()) {
             String configLine = gameFileReader.nextLine();
-            String[] attributeFeature = configLine.split("\\s");
-            StringBuilder attributeValue = new StringBuilder();
-            for (int i = 1; i < attributeFeature.length; i++) {
-                attributeValue.append(attributeFeature[i]).append(" ");
+            if (configLine.matches("[P]\\d+")) {
+                if (featureList.size() <= 0) {
+                    getFeatureType(String.valueOf(featureValue));
+                }
+                individualFeature.put(configLine, new HashMap<>());
+            } else {
+                String[] attributeFeature = configLine.split("\\s");
+                String attributeValue = attributeFeature[0] + " ";
+                featureValue.append(attributeValue);
             }
-            featureMap.put(attributeFeature[0], String.valueOf(attributeValue));
         }
 
-
     } // end of BinaryGuessPlayer()
-
 
     public Guess guess() {
 
@@ -65,5 +68,14 @@ public class BinaryGuessPlayer implements Player {
         // placeholder, replace
         return true;
     } // end of receiveAnswer()
+
+    private void calculateFeatureCount() {
+
+    }
+
+    private void getFeatureType(String allFeature) {
+        String[] featureArray = allFeature.split("\\s");
+        featureList.addAll(Arrays.asList(featureArray));
+    }
 
 } // end of class BinaryGuessPlayer
