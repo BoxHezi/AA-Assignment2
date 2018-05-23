@@ -12,11 +12,10 @@ import java.util.*;
 public class BinaryGuessPlayer implements Player {
     //list to store all feature that one candidate might have
     List<String> featureList = new ArrayList<>();
-    Map<String, String> candidateMap = new HashMap<>();
     //count how time per feature appears
     Map<String, Map<String, Integer>> featureCount = new HashMap<>();
     //store each person's feature value
-    Map<String, Map<String, String>> individualFeature = new HashMap<>();
+    Map<String, Map<String, String>> candidateMap = new HashMap<>();
 
     /**
      * Loads the game configuration from gameFilename, and also store the chosen
@@ -39,7 +38,9 @@ public class BinaryGuessPlayer implements Player {
                 if (featureList.size() <= 0) {
                     getFeatureType(String.valueOf(featureValue));
                 }
-                HashMap<String, String> individualFeatureInnerMap = new HashMap<>();
+
+                //get each person's attribute and store in a hash map
+                HashMap<String, String> candidateInnerMap = new HashMap<>();
                 do {
                     String candidateFeature;
                     if (gameFileReader.hasNextLine()) {
@@ -47,13 +48,16 @@ public class BinaryGuessPlayer implements Player {
                     } else {
                         break;
                     }
-                    System.out.println(candidateFeature);
-                    if (candidateFeature.matches("[P2]")) {
+                    if (candidateFeature.matches("")) {
+                        candidateMap.put(configLine, candidateInnerMap);
                         System.out.println("--------");
                         break;
                     }
+                    String[] candidateFeatureAndValue = candidateFeature.split("\\s");
+                    candidateInnerMap.put(candidateFeatureAndValue[0], candidateFeatureAndValue[1]);
+
                 } while (true);
-                individualFeature.put(configLine, new HashMap<>());
+                candidateMap.put(configLine, new HashMap<>());
             } else {
                 String[] attributeFeature = configLine.split("\\s");
                 String attributeValue = attributeFeature[0] + " ";
