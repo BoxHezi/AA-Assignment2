@@ -12,11 +12,11 @@ import java.util.*;
 public class BinaryGuessPlayer implements Player {
     private String chosenName;
     //list to store all feature that one candidate might have
-    private List<String> featureList = new ArrayList<>();
+    private List<String> features = new ArrayList<>();
     //store attribute value of the chosen person
     private Map<String, String> chosenFeature;
     //count how much time per feature appears
-    private Map<String, Map<String, Integer>> featureCount = new HashMap<>();
+    private Map<String, Map<String, Integer>> featureCountMap = new HashMap<>();
     //store each person's feature value
     private Map<String, Map<String, String>> candidateMap = new HashMap<>();
     int candidateCount = 0;
@@ -40,7 +40,7 @@ public class BinaryGuessPlayer implements Player {
         while (gameFileReader.hasNextLine()) {
             String configLine = gameFileReader.nextLine();
             if (configLine.matches("[P]\\d+")) {
-                if (featureList.size() <= 0) {
+                if (features.size() <= 0) {
                     storeAttributeType(String.valueOf(featureValue));
                 }
 
@@ -95,19 +95,39 @@ public class BinaryGuessPlayer implements Player {
         return true;
     } // end of receiveAnswer()
 
+    /**
+     * count feature appearance
+     */
     private void calculateFeatureCount() {
-        for (String s : featureList) {
-            featureCount.put(s, new HashMap<>());
+        for (String feature : features) {
+            featureCountMap.put(feature, new HashMap<>());
         }
-        for (String s : candidateMap.keySet()) {
-            Map<String, String> tempCandidateMap = candidateMap.get(s);
-            System.out.println(s + " " + tempCandidateMap);
+        for (String candidateKey : candidateMap.keySet()) {
+            Map<String, String> tempCandidateMap = candidateMap.get(candidateKey);
+            for (String attribute : tempCandidateMap.keySet()) {
+                String attributeValue = tempCandidateMap.get(attribute);
+                int attributeCount = 0;
+                if (null != featureCountMap.get(attribute).get(tempCandidateMap.get(attribute))) {
+                    attributeCount = featureCountMap.get(attribute).get(tempCandidateMap.get(attribute));
+                }
+                Map<String, Integer> tempCountMap = featureCountMap.get(attribute);
+                tempCountMap.put(attributeValue, ++attributeCount);
+                featureCountMap.put(attribute, tempCountMap);
+            }
+        }
+        for (String s : featureCountMap.keySet() ) {
+            System.out.println(s + " " + featureCountMap.get(s));
         }
     }
 
+    /**
+     * put all features in a list
+     *
+     * @param features features that need to be stored
+     */
     private void storeAttributeType(String features) {
         String[] featureArray = features.split("\\s");
-        featureList.addAll(Arrays.asList(featureArray));
+        this.features.addAll(Arrays.asList(featureArray));
     }
 
 } // end of class BinaryGuessPlayer
