@@ -112,7 +112,7 @@ public class RandomGuessPlayer implements Player {
                         Person.put(key, words[1]);
                         boolean append = false;
                         /**
-                        * Here the value is appened to the current key value of the if they have the same 
+                        * Here the value is appened to the current key value of the feature if they have the same 
                         * matching key, if not then a new key is added to the hashmap. They are added with
                         * a speace between each attribute so then it can split it later on in the program
                         */
@@ -141,11 +141,15 @@ public class RandomGuessPlayer implements Player {
     public Guess guess() {
         // placeholder, replace
         Random generateRand = new Random();
+		if (Person.size() <= 2 && Opponent.size()+2 != Feature.size()) {
+			return guessPerson(generateRand);
+		} else {
         if (Opponent.size() != Feature.size()) {
             return guessFeature(generateRand);
         }
         /*Guessing person*/
         return guessPerson(generateRand);
+		}
     } // end of guess()
     
     /**
@@ -181,6 +185,8 @@ public class RandomGuessPlayer implements Player {
     * which would be the opponenet's chosen person.
     */
     private Guess guessPerson(Random generateRand) {
+		
+		/*if there are only two people left, then a person*/
         Object[] pplK = Person.keySet().toArray();
         if (pplK.length == 0) {
             System.out.println("Player does not exist");
@@ -214,7 +220,7 @@ public class RandomGuessPlayer implements Player {
     } // end of answer()
     
     /**
-    * if this was not a person guess return false which woudl continue the game
+    * if this was not a person guess return false which would continue the game
     * if this was a person guess and they got it right return true which would end 
     * the game
     */
@@ -229,7 +235,7 @@ public class RandomGuessPlayer implements Player {
                 return incorrectGuess(currGuess);
             }
         }
-        /*if for some reason it guesses wrong delete the character that doesn't fit in*/
+        /*if for some reason it guesses wrong delete the person that doesn't fit in*/
         if (currGuess.getAttribute().equals("") && !answer) {
             Person.remove(currGuess.getValue(), Person.get(currGuess.getValue()));
             return false;
