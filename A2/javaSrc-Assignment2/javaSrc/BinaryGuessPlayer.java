@@ -68,7 +68,7 @@ public class BinaryGuessPlayer implements Player {
      * method to read each candidate
      *
      * @param gameFileReader Scanner to read every line for each person
-     * @param configLine     indicate which person is scanning at the monment
+     * @param configLine     indicate which person is scanning at the moment
      */
     private void readCandidate(Scanner gameFileReader, String configLine) {
         //get each person's attribute and store in a hash map
@@ -133,16 +133,20 @@ public class BinaryGuessPlayer implements Player {
      * calculate feature appearance
      */
     private void calculateFeatureCount() {
+        //using for loop to reset count map
         for (String feature : features) {
             featureCountMap.put(feature, new HashMap<>());
         }
-        for (String candidateKey : filterMap.keySet()) {
-            Map<String, String> tempCandidateMap = filterMap.get(candidateKey);
-            for (String attribute : tempCandidateMap.keySet()) {
-                String attributeValue = tempCandidateMap.get(attribute);
+        //count all feature count from all candidate left
+        for (String currentCandidate : filterMap.keySet()) {
+            //get candidate feature and value map from the filterMap
+            Map<String, String> candidateFeatureMap = filterMap.get(currentCandidate);
+            //loop through all feature and and update the feature count
+            for (String attribute : candidateFeatureMap.keySet()) {
+                String attributeValue = candidateFeatureMap.get(attribute);
                 int attributeCount = 0;
-                if (null != featureCountMap.get(attribute).get(tempCandidateMap.get(attribute))) {
-                    attributeCount = featureCountMap.get(attribute).get(tempCandidateMap.get(attribute));
+                if (null != featureCountMap.get(attribute).get(candidateFeatureMap.get(attribute))) {
+                    attributeCount = featureCountMap.get(attribute).get(candidateFeatureMap.get(attribute));
                 }
                 Map<String, Integer> tempCountMap = featureCountMap.get(attribute);
                 tempCountMap.put(attributeValue, ++attributeCount);
@@ -168,30 +172,36 @@ public class BinaryGuessPlayer implements Player {
      * @param answer    true or false to indicate the guess attribute value in one round
      */
     private void shrinkFilterMap(Guess currGuess, boolean answer) {
+        //get candidate list
         List<String> candidateList = new ArrayList<>();
         for (Object obj : filterMap.entrySet()) {
             Map.Entry mapEntry = (Map.Entry) obj;
             candidateList.add((String) mapEntry.getKey());
         }
+        //using loop to filter out unwanted candidate
         for (String currKey : candidateList) {
-            Map<String, String> tempMap = filterMap.get(currKey);
-            for (Object obj : tempMap.entrySet()) {
-                Map.Entry entry = (Map.Entry) obj;
+            Map<String, String> currentCandidateFeature = filterMap.get(currKey);
+            for (Object obj : currentCandidateFeature.entrySet()) {
+                Map.Entry currentCandidate = (Map.Entry) obj;
                 if (answer) {
-                    if (entry.getKey().equals(currGuess.getAttribute())) {
-                        if (!entry.getValue().equals(currGuess.getValue())) {
+                    if (currentCandidate.getKey().equals(currGuess.getAttribute())) {
+                        if (!currentCandidate.getValue().equals(currGuess.getValue())) {
                             filterMap.remove(currKey);
+                            break;
                         }
                     }
                 } else {
-                    if (entry.getKey().equals(currGuess.getAttribute())) {
-                        if (entry.getValue().equals(currGuess.getValue())) {
+                    if (currentCandidate.getKey().equals(currGuess.getAttribute())) {
+                        if (currentCandidate.getValue().equals(currGuess.getValue())) {
                             filterMap.remove(currKey);
+                            break;
                         }
                     }
                 }
             }
         }
+
+        //update feature count after the possible candidate changed every time
         calculateFeatureCount();
     }
 
@@ -203,22 +213,29 @@ public class BinaryGuessPlayer implements Player {
      */
     private List<String> getGuessAttributeAndValue(int halfCount) {
         List<String> attributeValue = new ArrayList<>();
-        List<String> mapKey = new ArrayList<>();
+        List<String> featureKeyList = new ArrayList<>();
+        //get all possible feature and store in a list
         for (Object obj : featureCountMap.entrySet()) {
             Map.Entry entry = (Map.Entry) obj;
-            mapKey.add((String) entry.getKey());
+            featureKeyList.add((String) entry.getKey());
         }
-        for (String currKey : mapKey) {
-            Map<String, Integer> tempMap = featureCountMap.get(currKey);
-            for (Object obj : tempMap.entrySet()) {
+        for (String currentKey : featureKeyList) {
+            //get feature count for each feature
+            Map<String, Integer> tempFeatureCountMap = featureCountMap.get(currentKey);
+            for (Object obj : tempFeatureCountMap.entrySet()) {
                 Map.Entry entry = (Map.Entry) obj;
                 int count = (int) entry.getValue();
                 if (count == halfCount) {
-                    attributeValue.add(currKey);
+                    attributeValue.add(currentKey);
                     attributeValue.add((String) entry.getKey());
                     return attributeValue;
                 }
             }
+        }
+        //if there are no possible guess to filter out half of the candidate
+        //decrease the halfcount to get as close as possible to half
+        if (attributeValue.size() <= 0) {
+            return getGuessAttributeAndValue(--halfCount);
         }
         return attributeValue;
     }
