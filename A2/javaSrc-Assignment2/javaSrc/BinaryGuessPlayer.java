@@ -42,36 +42,54 @@ public class BinaryGuessPlayer implements Player {
                 if (features.size() <= 0) {
                     storeAttributeType(String.valueOf(featureValue));
                 }
-
-                //get each person's attribute and store in a hash map
-                HashMap<String, String> candidateInnerMap = new HashMap<>();
-                do {
-                    String candidateFeature;
-                    if (gameFileReader.hasNextLine()) {
-                        candidateFeature = gameFileReader.nextLine();
-                        String[] candidateFeatureAndValue = candidateFeature.split("\\s");
-                        if (!candidateFeature.matches("")) {
-                            candidateInnerMap.put(candidateFeatureAndValue[0], candidateFeatureAndValue[1]);
-                        }
-                    } else {
-                        break;
-                    }
-                    if (candidateFeature.matches("") || !gameFileReader.hasNextLine()) {
-                        candidateMap.put(configLine, candidateInnerMap);
-                        break;
-                    }
-                } while (true);
+                readCandidate(gameFileReader, configLine);
             } else {
-                String[] attributeFeature = configLine.split("\\s");
-                String attributeValue = attributeFeature[0] + " ";
-                featureValue.append(attributeValue);
+                readFeature(featureValue, configLine);
             }
         }
 
         filterMap = new HashMap<>(candidateMap);
-
         calculateFeatureCount();
     } // end of BinaryGuessPlayer()
+
+    /**
+     * method to read attribute feature
+     *
+     * @param featureValue StringBuilder contains both feature and value
+     * @param configLine   current reading line of the file
+     */
+    private void readFeature(StringBuilder featureValue, String configLine) {
+        String[] attributeFeature = configLine.split("\\s");
+        String attributeValue = attributeFeature[0] + " ";
+        featureValue.append(attributeValue);
+    }
+
+    /**
+     * method to read each candidate
+     *
+     * @param gameFileReader Scanner to read every line for each person
+     * @param configLine     indicate which person is scanning at the monment
+     */
+    private void readCandidate(Scanner gameFileReader, String configLine) {
+        //get each person's attribute and store in a hash map
+        HashMap<String, String> candidateInnerMap = new HashMap<>();
+        do {
+            String candidateFeature;
+            if (gameFileReader.hasNextLine()) {
+                candidateFeature = gameFileReader.nextLine();
+                String[] candidateFeatureAndValue = candidateFeature.split("\\s");
+                if (!candidateFeature.matches("")) {
+                    candidateInnerMap.put(candidateFeatureAndValue[0], candidateFeatureAndValue[1]);
+                }
+            } else {
+                break;
+            }
+            if (candidateFeature.matches("") || !gameFileReader.hasNextLine()) {
+                candidateMap.put(configLine, candidateInnerMap);
+                break;
+            }
+        } while (true);
+    }
 
     public Guess guess() {
         //when only one candidate left, guess the person
@@ -143,6 +161,12 @@ public class BinaryGuessPlayer implements Player {
         this.features.addAll(Arrays.asList(featureArray));
     }
 
+    /**
+     * shrink the possible candidate
+     *
+     * @param currGuess current guess
+     * @param answer    true or false to indicate the guess attribute value in one round
+     */
     private void shrinkFilterMap(Guess currGuess, boolean answer) {
         List<String> candidateList = new ArrayList<>();
         for (Object obj : filterMap.entrySet()) {
@@ -196,7 +220,7 @@ public class BinaryGuessPlayer implements Player {
                 }
             }
         }
-        return new ArrayList<>();
+        return attributeValue;
     }
 
 } // end of class BinaryGuessPlayer
