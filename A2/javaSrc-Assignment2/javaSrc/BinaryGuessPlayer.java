@@ -13,15 +13,12 @@ public class BinaryGuessPlayer implements Player {
     private String chosenName;
     //list to store all feature that one candidate might have
     private List<String> features = new ArrayList<>();
-    //store attribute value of the chosen person
-    private Map<String, String> chosenFeature;
     //count how much time per feature appears
     private Map<String, Map<String, Integer>> featureCountMap = new HashMap<>();
     //store each person's feature value
     private Map<String, Map<String, String>> candidateMap = new HashMap<>();
     //store all possible answer due to previous answer
-    private Map<String, Map<String, String>> filterMap = new HashMap<>();
-    int candidateCount;
+    private Map<String, Map<String, String>> filterMap;
 
     /**
      * Loads the game configuration from gameFilename, and also store the chosen
@@ -70,9 +67,6 @@ public class BinaryGuessPlayer implements Player {
                 featureValue.append(attributeValue);
             }
         }
-
-        candidateCount = candidateMap.size();
-        chosenFeature = candidateMap.get(chosenName);
 
         filterMap = new HashMap<>(candidateMap);
 
@@ -137,9 +131,6 @@ public class BinaryGuessPlayer implements Player {
                 featureCountMap.put(attribute, tempCountMap);
             }
         }
-        for (String s : featureCountMap.keySet()) {
-            System.out.println(s + "=" + featureCountMap.get(s));
-        }
     }
 
     /**
@@ -182,6 +173,7 @@ public class BinaryGuessPlayer implements Player {
 
     /**
      * get best guess attribute and value
+     *
      * @param halfCount half filter indicator
      * @return list contains attribute and value to guess
      */
